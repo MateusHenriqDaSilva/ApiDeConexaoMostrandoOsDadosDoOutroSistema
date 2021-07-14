@@ -1,0 +1,37 @@
+<?php
+require_once 'Token.php';
+class Pessoa
+{
+    public static $resultadoPessoa;
+
+    public static function PegarPessoa()
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => 'https://testeonline.adiantibuilder.com.br/60df5205baa88/e_soft/pessoa/',
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' .     Token::pegarToken(),
+                'Content-Type: application/json',
+                'x-li-format: json'
+            ],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS
+        ]);
+        self::$resultadoPessoa = curl_exec($ch);
+        curl_close($ch);
+    }
+
+
+    public static function MostrarPessoaNaTela()
+    {
+        $decodificar = json_decode(self::$resultadoPessoa, true);
+        $todasPessoas = count($decodificar);
+        echo "<div class='select'>";
+        echo "<select name='tipoBeneficiario'>";
+        for ($contador = 0; $contador < $todasPessoas; $contador++) {
+            echo "<option value='" . $decodificar['data'][$contador]['id'] . "'>" . $decodificar['data'][$contador]['id'] . " - " . $decodificar["data"][$contador]["nome"] . "</option>";
+        }
+        echo "</select>";
+        echo "</div>";
+    }
+}
